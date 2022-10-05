@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/issuer: v1-issuer
+    kubernetes.io/ingress.provider: router-default
+    meta.helm.sh/release-name: v1
+    meta.helm.sh/release-namespace: gitlab-system
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    route.openshift.io/termination: edge
+  labels:
+    app: webservice
+    app.kubernetes.io/managed-by: Helm
+    chart: webservice-6.4.1
+    gitlab.com/webservice-name: default
+    heritage: Helm
+    release: v1
+  name: v1-webservice-default
+  namespace: gitlab-system
+spec:
+  rules:
+  - host: gitlab-test.apps.ocp410a.lab.pnq2.cee.redhat.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: v1-webservice-default
+            port:
+              number: 8181
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - gitlab-test.apps.ocp410a.lab.pnq2.cee.redhat.com
+    secretName: v1-gitlab-tls
+status:
+  loadBalancer: {}

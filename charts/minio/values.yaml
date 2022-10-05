@@ -1,13 +1,13 @@
 ## Set default image, imageTag, and imagePullPolicy.
 ## Distributed Minio ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
 ##
-image: "minio/minio"
+image: "quay.io/szobair/minio"
 imageTag: "RELEASE.2017-12-28T01-21-00Z"
 # imagePullPolicy: IfNotPresent
 # pullSecrets: []
 
 minioMc:
-  image: minio/mc
+  image: quay.io/szobair/gitlab-ee/mc
   tag: "RELEASE.2018-07-13T00-53-22Z"
 
 ingress:
@@ -76,7 +76,7 @@ replicas: 4
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
 persistence:
-  enabled: true
+  enabled: false
 
   ## minio data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>

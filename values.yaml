@@ -27,7 +27,8 @@ global:
   common:
     labels: {}
 
-  image: {}
+  image:
+    pullPolicy: Always
     # pullPolicy: IfNotPresent
     # pullSecrets: []
 
@@ -36,10 +37,11 @@ global:
     labels: {}
 
   ## https://docs.gitlab.com/charts/installation/deployment#deploy-the-community-edition
+  #edition: ce
   edition: ee
 
   ## https://docs.gitlab.com/charts/charts/globals#gitlab-version
-  # gitlabVersion:
+  gitlabVersion: 15.4.1
 
   ## https://docs.gitlab.com/charts/charts/globals#application-resource
   application:
@@ -48,8 +50,8 @@ global:
     allowClusterRoles: true
   ## https://docs.gitlab.com/charts/charts/globals#configure-host-settings
   hosts:
-    domain: example.com
-    hostSuffix:
+    domain: apps.ocp410a.lab.pnq2.cee.redhat.com
+    hostSuffix: test
     https: true
     externalIP:
     ssh: ~
@@ -65,9 +67,11 @@ global:
   ingress:
     apiVersion: ""
     configureCertmanager: true
-    provider: nginx
-    # class:
-    annotations: {}
+    #provider: nginx
+    provider: router-default
+    class: none
+    annotations:
+      route.openshift.io/termination: "edge"
     enabled: true
     tls: {}
     #   enabled: true
@@ -139,6 +143,10 @@ global:
   ## https://docs.gitlab.com/charts/charts/globals#configure-gitaly-settings
   gitaly:
     enabled: true
+    persistence:
+      enabled: false
+      size: 10Gi
+      storageClass: none
     authToken: {}
       # secret:
       # key:
@@ -186,12 +194,26 @@ global:
   ## https://docs.gitlab.com/charts/charts/globals#configure-minio-settings
   minio:
     enabled: true
+    persistence:
+      enabled: false
+      size: 10Gi
+      storageClass: none
     credentials: {}
       # secret:
+    image: quay.io/szobair/minio
+    imageTag: RELEASE.2017-12-28T01-21-00Z
+    minioMc:
+      image: quay.io/szobair/gitlab-ee/mc
+      tag: RELEASE.2018-07-13T00-53-22Z
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-grafana-integration
   grafana:
     enabled: false
+
+  registry:
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-container-registry
+      tag: 'v3.57.0-gitlab'
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-appconfig-settings
   ## Rails based portions of this chart share many settings
@@ -523,6 +545,9 @@ global:
     enabled: true
     service:
       apiExternalPort: 8153 # port for connections from the GitLab backend
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-kas
+      tag: master
 
   ## https://docs.gitlab.com/charts/charts/gitlab/spamcheck/
   spamcheck:
@@ -553,6 +578,13 @@ global:
   ## https://docs.gitlab.com/charts/charts/globals#configure-registry-settings
   registry:
     bucket: registry
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-container-registry
+      tag: v3.57.0-gitlab
+    init:
+      image:
+        repository: quay.io/szobair/gitlab-ee/alpine-certificates
+        tag: 20191127-r2
     certificate: {}
       # secret:
     httpSecret: {}
@@ -686,12 +718,14 @@ global:
   # configuration of certificates container & custom CA injection
   certificates:
     image:
-      repository: registry.gitlab.com/gitlab-org/build/cng/alpine-certificates
+      #repository: registry.gitlab.com/gitlab-org/build/cng/alpine-certificates
+      repository: quay.io/szobair/gitlab-ee/alpine-certificates
       # The digest below comes from a given tag pipeline because they are mirrored to .com,
       # ensuring that the image tag is available from both instances. The digest can be
       # found in the 'sync_images' job.
       #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
-      tag: 20191127-r2@sha256:367d437d024d7647432d67fb2442e3e5723af5930bad77d3535f4f8f4f8630d9
+      #tag: 20191127-r2@sha256:367d437d024d7647432d67fb2442e3e5723af5930bad77d3535f4f8f4f8630d9
+      tag: 20191127-r2
       # pullPolicy: IfNotPresent
       # pullSecrets: []
     customCAs: []
@@ -708,13 +742,14 @@ global:
   ## kubectl image used by hooks to carry out specific jobs
   kubectl:
     image:
-      repository: registry.gitlab.com/gitlab-org/build/cng/kubectl
+      repository: quay.io/szobair/kubectl
+      #repository: registry.gitlab.com/gitlab-org/build/cng/kubectl
       # The digest below comes from a given tag pipeline because they are mirrored to .com,
       # ensuring that the image tag is available from both instances. The digest can be
       # found in the 'sync_images' job.
       #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
-      tag: 1.18.20@sha256:8d27c191af306cafddba2f293c5613f8966363f779d79a5599ad0231e60069e4
-      # pullPolicy: IfNotPresent
+      tag: 1.18.20
+      pullPolicy: Always
       # pullSecrets: []
     securityContext:
       # in most base images, this is `nobody:nogroup`
@@ -722,7 +757,8 @@ global:
       fsGroup: 65534
   busybox:
     image:
-      repository: registry.gitlab.com/gitlab-org/cloud-native/mirror/images/busybox
+      repository: quay.io/szobair/busybox
+      #repository: registry.gitlab.com/gitlab-org/cloud-native/mirror/images/busybox
       tag: latest
       # pullPolicy: IfNotPresent
       # pullSecrets: []
@@ -768,7 +804,7 @@ global:
 ## End of global
 
 upgradeCheck:
-  enabled: true
+  enabled: false
   image: {}
     # repository:
     # tag:
@@ -785,10 +821,13 @@ upgradeCheck:
       cpu: 50m
 
 ## Settings to for the Let's Encrypt ACME Issuer
-# certmanager-issuer:
+  certmanager-issuer:
 #   # The email address to register certificates requested from Let's Encrypt.
 #   # Required if using Let's Encrypt.
-#   email: email@example.com
+    email: szobair@redhat.com
+    image:
+      repository: quay.io/szobair/jetstack/cert-manager-acmesolver
+      tag: v1.9.1
 
 ## Installation & configuration of jetstack/cert-manager
 ## See requirements.yaml for current version
@@ -797,17 +836,20 @@ certmanager:
   nameOverride: certmanager
   # Install cert-manager chart. Set to false if you already have cert-manager
   # installed or if you are not using cert-manager.
+  #install: false
   install: true
   # Other cert-manager configurations from upstream
   # See https://github.com/jetstack/cert-manager/blob/master/deploy/charts/cert-manager/README#configuration
   rbac:
     create: true
+  certmanager-issuer:
+    email: szobair@redhat.com
 
 ## https://docs.gitlab.com/charts/charts/nginx/
 ## https://docs.gitlab.com/charts/architecture/decisions#nginx-ingress
 ## Installation & configuration of charts/ingress-nginx:
 nginx-ingress:
-  enabled: true
+  enabled: false
   tcpExternalConfig: "true"
   controller:
     addHeaders:
@@ -864,7 +906,7 @@ nginx-ingress:
 ## Installation & configuration of stable/prometheus
 ## See requirements.yaml for current version
 prometheus:
-  install: true
+  install: false
   rbac:
     create: true
   alertmanager:
@@ -1011,6 +1053,15 @@ prometheus:
 ## https://docs.gitlab.com/charts/installation/deployment.html#redis
 redis:
   install: true
+  master:
+    persistence:
+      enabled: false
+      size: 10Gi
+      storageClass: none
+  image:
+    registry: quay.io
+    repository: szobair/redis
+    tag: 6.0.9-debian-10-r0
   existingSecret: gitlab-redis-secret
   existingSecretKey: redis-password
   usePasswordFile: true
@@ -1018,16 +1069,26 @@ redis:
     enabled: false
   metrics:
     enabled: true
+    image:
+      registry: quay.io
+      repository: szobair/gitlab-ee/redis-exporter
+      tag: 1.12.1-debian-10-r11
 
 ## Installation & configuration of stable/prostgresql
 ## See requirements.yaml for current version
 postgresql:
+  persistence:
+    enabled: false
+    size: 10Gi
+    storageClass: none
   postgresqlUsername: gitlab
   # This just needs to be set. It will use a second entry in existingSecret for postgresql-postgres-password
   postgresqlPostgresPassword: bogus
   install: true
   postgresqlDatabase: gitlabhq_production
   image:
+    registry: quay.io
+    repository: szobair/postgresql
     tag: 12.7.0
   usePasswordFile: true
   existingSecret: bogus
@@ -1041,6 +1102,10 @@ postgresql:
       postgresql.gitlab/init-revision: "1"
   metrics:
     enabled: true
+    image:
+      registry: quay.io
+      repository: szobair/gitlab-ee/postgres-exporter
+      tag: 0.8.0-debian-10-r99
     ## Optionally define additional custom metrics
     ## ref: https://github.com/wrouesnel/postgres_exporter#adding-new-metrics-via-a-config-file
 
@@ -1091,6 +1156,11 @@ shared-secrets:
 ## See requirements.yaml for current version
 gitlab-runner:
   install: true
+  image: quay.io/szobair/gitlab-ee/gitlab-runner:alpine-v15.4.0
+  #init:
+    #image:
+      #repository:
+      #tag:
   rbac:
     create: true
   runners:
@@ -1174,25 +1244,83 @@ gitlab:
     antiAffinityLabels:
       matchLabels:
         app: gitaly
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-toolbox-ee
+      tag: v15.4.1
+    init:
+      image:
+        repository: quay.io/szobair/gitlab-ee/alpine-certificates
+        tag: 20191127-r2
+    persistence:
+      enabled: false
   ## https://docs.gitlab.com/charts/charts/gitlab/migrations
-  #   migrations:
-  #     enabled: false
+  migrations:
+    enabled: true
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-toolbox-ee
+      tag: v15.4.1
+      pullPolicy: Always
+    init:
+      image:
+        repository: quay.io/szobair/gitlab-ee/busybox
+        tag: latest
   ## https://docs.gitlab.com/charts/charts/gitlab/webservice
-  #   webservice:
-  #     enabled: false
+  webservice:
+    enabled: true
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-webservice-ee
+      tag: v15.4.1
+    init:
+      image:
+        repository: quay.io/szobair/gitlab-ee/alpine-certificates
+        tag: 20191127-r2
+    workhorse:
+      image: quay.io/szobair/gitlab-ee/gitlab-workhorse-ee
+        #repository: quay.io/szobair/gitlab-ee/gitlab-workhorse-ee
+        #tag: v15.4.1
   ## https://docs.gitlab.com/charts/charts/gitlab/sidekiq
-  #   sidekiq:
-  #     enabled: false
+  sidekiq:
+    enabled: false
+    #image:
+      #repository:
+      #tag:
+    #init:
+      #image: 
+        #repository:
+        #tag:
   ## https://docs.gitlab.com/charts/charts/gitlab/gitaly
-  #   gitaly:
+  gitaly:
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitaly
+      tag: master
+    init:
+      image:
+        repository: quay.io/szobair/gitlab-ee/alpine-certificates
+        tag: 20191127-r2
   ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell
-  #   gitlab-shell:
-  #     enabled: false
+  gitlab-shell:
+    enabled: false
   ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-grafana
   #   gitlab-grafana:
   ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-pages
   #   gitlab-pages:
   ## https://docs.gitlab.com/charts/charts/gitlab/kas
-  #   kas:
+  kas:
+    enabled: false
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-kas
+      tag: master
   ## https://docs.gitlab.com/charts/charts/gitlab/praefect
-  #   praefect:
+  praefect:
+    enabled: false
+  minio:
+    image: quay.io/szobair/minio
+    imageTag: RELEASE.2017-12-28T01-21-00Z
+    minioMc:
+      image: quay.io/szobair/gitlab-ee/mc
+      tag: RELEASE.2018-07-13T00-53-22Z
+  gitlab-exporter:
+    image:
+      repository: quay.io/szobair/gitlab-ee/gitlab-exporter
+      tag: 11.18.2
+  

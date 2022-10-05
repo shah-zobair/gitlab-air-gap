@@ -96,7 +96,7 @@ metrics:
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
 persistence:
-  enabled: true
+  enabled: false
 
   ## git repositories Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
