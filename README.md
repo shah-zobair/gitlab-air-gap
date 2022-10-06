@@ -47,3 +47,36 @@ and see the [changelog](CHANGELOG.md) for the full details on any release.
 
 See the [contribution guidelines](CONTRIBUTING.md) and then check out the
 [development styleguide](doc/development/index.md).
+
+
+
+List of source Images:
+
+
+registry.gitlab.com/gitlab-org/cloud-native/gitlab-operator:0.8.1 quay.io/szobair/gitlab-operator:0.8.1
+registry.gitlab.com/gitlab-org/build/cng/gitaly:v15.2.2 quay.io/szobair/gitaly:v15.2.2
+registry.gitlab.com/gitlab-org/build/cng/kubectl:1.18.20 quay.io/szobair/kubectl:1.18.20
+registry.gitlab.com/gitlab-org/cloud-native/mirror/images/busybox:latest quay.io/szobair/busybox:latest
+registry.gitlab.com/gitlab-org/build/cng/cfssl-self-sign:1.6.1 quay.io/szobair/cfssl-self-sign:1.6.1
+docker.io/bitnami/postgresql:12.7.0 quay.io/szobair/postgresql:12.7.0
+docker.io/bitnami/redis:6.0.9-debian-10-r0 quay.io/szobair/redis:6.0.9-debian-10-r0
+docker.io/bitnami/redis-exporter:1.12.1-debian-10-r11 quay.io/szobair/redis-exporter:1.12.1-debian-10-r11
+docker.io/bitnami/postgres-exporter:0.8.0-debian-10-r99 quay.io/szobair/postgres-exporter:0.8.0-debian-10-r99
+gcr.io/kubebuilder/kube-rbac-proxy:1.18.20 quay.io/szobair/kube-rbac-proxy:1.18.20
+registry.gitlab.com/gitlab-org/cloud-native/mirror/images/defaultbackend-amd64:1.5 quay.io/szobair/defaultbackend-amd64:1.5
+docker.io/minio/minio:RELEASE.2017-12-28T01-21-00Z quay.io/szobair/minio:RELEASE.2017-12-28T01-21-00Z
+registry.gitlab.com/gitlab-org/build/cng/alpine-certificates20191127-r2@sha256:367d437d024d7647432d67fb2442e3e5723af5930bad77d3535f4f8f4f8630d9
+docker.io/bitnami/redis-exporter:1.12.1-debian-10-r11
+docker.io/bitnami/postgres-exporter:0.8.0-debian-10-r99
+registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ee:v15.4.1
+registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ee:v15.4.1
+registry.gitlab.com/gitlab-org/build/cng/gitlab-workhorse-ee:v15.4.1
+registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry:v3.57.0-gitlab
+registry.gitlab.com/gitlab-org/build/cng/gitlab-exporter:11.18.2
+registry.gitlab.com/gitlab-org/build/cng/gitlab-kas:master
+registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ee:v15.4.1
+registry.gitlab.com/gitlab-org/cloud-native/mirror/images/busybox:latest
+registry.gitlab.com/gitlab-org/gitlab-runner:alpine-v15.4.0
+quay.io/jetstack/cert-manager-cainjector:v1.5.4
+quay.io/jetstack/cert-manager-controller:v1.5.4
+quay.io/jetstack/cert-manager-webhook:v1.5.4
