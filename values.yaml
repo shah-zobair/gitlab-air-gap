@@ -844,6 +844,21 @@ certmanager:
     create: true
   certmanager-issuer:
     email: szobair@redhat.com
+  image:
+    repository: quay.io/jetstack/cert-manager-controller
+    tag: v1.5.4
+  webhook:
+    image:
+      repository: quay.io/jetstack/cert-manager-webhooks
+      tag: v1.5.4
+  cainjector:
+    image:
+      repository: quay.io/jetstack/cert-manager-cainjector
+      tag: v1.5.4
+  startupapicheck:
+    image:
+      repository: quay.io/jetstack/cert-manager-ctl
+      tag: v1.5.4
 
 ## https://docs.gitlab.com/charts/charts/nginx/
 ## https://docs.gitlab.com/charts/architecture/decisions#nginx-ingress
